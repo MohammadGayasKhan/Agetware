@@ -11,12 +11,10 @@ function CustomerLogin({ setCustomerId }) {
     e.preventDefault();
     if (!inputId) return;
     try {
-      // Try to fetch customer
       await axios.get(`http://localhost:5000/api/v1/customers/${inputId}/overview`);
       setCustomerId(inputId);
       navigate('/customer/account-overview');
     } catch {
-      // If not found, create customer
       try {
         await axios.post('http://localhost:5000/api/v1/customers', { customer_id: inputId, name: inputId });
         setCustomerId(inputId);

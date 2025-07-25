@@ -18,7 +18,6 @@ function CustomerOverview({ customerId: propCustomerId }) {
     }
   }, [customerId]);
 
-  // If customerId is not provided as prop (bank mode), ask for it
   if (!propCustomerId && !customerId) {
     return (
       <div style={{ textAlign: 'center', marginTop: '50px' }}>
@@ -39,7 +38,6 @@ function CustomerOverview({ customerId: propCustomerId }) {
     );
   }
 
-  // If customerId is required (customer mode) but missing, show login prompt
   if (propCustomerId && !customerId) {
     return <p>Please login as customer first.</p>;
   }

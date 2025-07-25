@@ -7,11 +7,9 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = 5000;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Database setup
 const db = new sqlite3.Database('./bank.db', (err) => {
   if (err) {
     console.error(err.message);
@@ -19,7 +17,6 @@ const db = new sqlite3.Database('./bank.db', (err) => {
   console.log('Connected to the bank database.');
 });
 
-// Create tables
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS customers (
     customer_id TEXT PRIMARY KEY,
@@ -50,7 +47,6 @@ db.serialize(() => {
   )`);
 });
 
-// Helper function to calculate loan details
 function calculateLoanDetails(principal, years, rate) {
   const interest = principal * years * (rate / 100);
   const totalAmount = principal + interest;
@@ -58,7 +54,6 @@ function calculateLoanDetails(principal, years, rate) {
   return { interest, totalAmount, monthlyEmi };
 }
 
-// API Routes
 
 // LEND: Create a new loan
 app.post('/api/v1/loans', (req, res) => {
@@ -148,7 +143,7 @@ app.post('/api/v1/loans/:loan_id/payments', (req, res) => {
             const new_total_paid = total_paid + amount;
             const new_balance = loan.total_amount - new_total_paid;
             let new_status = loan.status;
-            if (new_balance <= 0.01) { // allow for floating point rounding
+            if (new_balance <= 0.01) { 
               new_status = 'CLOSED';
             }
             db.run(
@@ -170,7 +165,7 @@ app.post('/api/v1/loans/:loan_id/payments', (req, res) => {
   });
 });
 
-// LEDGER: Get loan details and transactions
+// LEDGER 
 app.get('/api/v1/loans/:loan_id/ledger', (req, res) => {
   const { loan_id } = req.params;
 
@@ -220,7 +215,7 @@ app.get('/api/v1/loans/:loan_id/ledger', (req, res) => {
   );
 });
 
-// ACCOUNT OVERVIEW: Get all loans for a customer
+// ACCOUNT OVERVIEW 
 app.get('/api/v1/customers/:customer_id/overview', (req, res) => {
   const { customer_id } = req.params;
 
@@ -271,10 +266,10 @@ function getLoanDetails(loanId, res) {
       if (!loan) {
         return res.status(404).json({ error: 'Loan not found' });
       }
-      // Always recalculate balance using latest payments
+      // IMPORTANT **Always recalculate balance using latest payments
       const amountPaid = loan.amount_paid || 0;
       let balanceAmount = loan.total_amount - amountPaid;
-      if (balanceAmount < 0) balanceAmount = 0; // Prevent negative balance
+      if (balanceAmount < 0) balanceAmount = 0;  
       const emisLeft = balanceAmount > 0 ? Math.ceil(balanceAmount / loan.monthly_emi) : 0;
 
       res.json({

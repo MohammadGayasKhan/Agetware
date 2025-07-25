@@ -21,7 +21,7 @@ function MakePayment() {
         emi_amount: res.data.monthly_emi,
         amount: res.data.monthly_emi // default for EMI
       }));
-      setRemaining(res.data.balance_amount); // Save remaining balance
+      setRemaining(res.data.balance_amount); // Saving remaining balance
     } catch {
       setFormData((prev) => ({
         ...prev,
